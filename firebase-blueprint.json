@@ -1,0 +1,438 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Core authenticated user profile with role assignment and country preference.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "displayName": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "email": { "type": "string", "minLength": 3, "maxLength": 180 },
+        "role": { "type": "string", "enum": ["customer", "seller", "delivery_partner", "admin"] },
+        "countryCode": { "type": "string", "enum": ["BD", "IN", "US", "GB", "SA"] },
+        "currencyCode": { "type": "string", "enum": ["BDT", "INR", "USD", "GBP", "SAR"] },
+        "isActive": { "type": "boolean" },
+        "photoUrl": { "type": "string", "maxLength": 500 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "displayName", "email", "role", "countryCode", "currencyCode", "isActive", "createdAt", "updatedAt"]
+    },
+    "Customer": {
+      "title": "Customer",
+      "description": "Customer profile with delivery addresses, phone, and activation state.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "fullName": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "email": { "type": "string", "minLength": 3, "maxLength": 180 },
+        "phone": { "type": "string", "maxLength": 32 },
+        "countryCode": { "type": "string", "enum": ["BD", "IN", "US", "GB", "SA"] },
+        "defaultAddress": { "type": "string", "maxLength": 300 },
+        "isActive": { "type": "boolean" },
+        "totalOrders": { "type": "integer" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "fullName", "email", "countryCode", "isActive", "totalOrders", "createdAt", "updatedAt"]
+    },
+    "Seller": {
+      "title": "Seller",
+      "description": "Merchant account verified by admin for international marketplace operations.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "businessName": { "type": "string", "minLength": 2, "maxLength": 140 },
+        "ownerName": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "email": { "type": "string", "minLength": 3, "maxLength": 180 },
+        "countryCode": { "type": "string", "enum": ["BD", "IN", "US", "GB", "SA"] },
+        "currencyCode": { "type": "string", "enum": ["BDT", "INR", "USD", "GBP", "SAR"] },
+        "verificationStatus": { "type": "string", "enum": ["pending", "verified", "rejected", "suspended"] },
+        "kycDocumentRef": { "type": "string", "maxLength": 240 },
+        "commissionRatePct": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "businessName", "ownerName", "email", "countryCode", "currencyCode", "verificationStatus", "commissionRatePct", "createdAt", "updatedAt"]
+    },
+    "DeliveryPartner": {
+      "title": "DeliveryPartner",
+      "description": "Courier/rider profile with vehicle metadata, live coordinates, and verification state.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "fullName": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "phone": { "type": "string", "minLength": 5, "maxLength": 32 },
+        "countryCode": { "type": "string", "enum": ["BD", "IN", "US", "GB", "SA"] },
+        "vehicleType": { "type": "string", "enum": ["bicycle", "motorbike", "ebike", "van"] },
+        "verificationStatus": { "type": "string", "enum": ["pending", "verified", "rejected", "suspended"] },
+        "isAvailable": { "type": "boolean" },
+        "currentLat": { "type": "number" },
+        "currentLng": { "type": "number" },
+        "completedDeliveries": { "type": "integer" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "fullName", "phone", "countryCode", "vehicleType", "verificationStatus", "isAvailable", "completedDeliveries", "createdAt", "updatedAt"]
+    },
+    "Shop": {
+      "title": "Shop",
+      "description": "Verified storefront operating inside a specific country marketplace.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "sellerUid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "name": { "type": "string", "minLength": 2, "maxLength": 140 },
+        "category": { "type": "string", "minLength": 2, "maxLength": 80 },
+        "countryCode": { "type": "string", "enum": ["BD", "IN", "US", "GB", "SA"] },
+        "currencyCode": { "type": "string", "enum": ["BDT", "INR", "USD", "GBP", "SAR"] },
+        "city": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "lat": { "type": "number" },
+        "lng": { "type": "number" },
+        "approvalStatus": { "type": "string", "enum": ["pending", "approved", "rejected", "suspended"] },
+        "isOpen": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "sellerUid", "name", "category", "countryCode", "currencyCode", "city", "approvalStatus", "isOpen", "createdAt", "updatedAt"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Marketplace product priced in the shop's local country currency.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "shopId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "sellerUid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "categoryId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "title": { "type": "string", "minLength": 2, "maxLength": 160 },
+        "description": { "type": "string", "maxLength": 1000 },
+        "countryCode": { "type": "string", "enum": ["BD", "IN", "US", "GB", "SA"] },
+        "currencyCode": { "type": "string", "enum": ["BDT", "INR", "USD", "GBP", "SAR"] },
+        "price": { "type": "number" },
+        "stock": { "type": "integer" },
+        "imageUrl": { "type": "string", "maxLength": 500 },
+        "visibilityStatus": { "type": "string", "enum": ["active", "hidden", "removed"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "shopId", "sellerUid", "categoryId", "title", "countryCode", "currencyCode", "price", "stock", "visibilityStatus", "createdAt", "updatedAt"]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "Catalog category with optional commission override.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "name": { "type": "string", "minLength": 2, "maxLength": 80 },
+        "slug": { "type": "string", "minLength": 2, "maxLength": 80, "pattern": "^[a-z0-9_\\-]+$" },
+        "commissionPct": { "type": "number" },
+        "isActive": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "slug", "commissionPct", "isActive", "createdAt", "updatedAt"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Multi-currency customer order with idempotency key, payment gateway status, and SLA metadata.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "customerUid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "shopId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "sellerUid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "riderUid": { "type": "string", "maxLength": 128 },
+        "countryCode": { "type": "string", "enum": ["BD", "IN", "US", "GB", "SA"] },
+        "currencyCode": { "type": "string", "enum": ["BDT", "INR", "USD", "GBP", "SAR"] },
+        "subtotal": { "type": "number" },
+        "deliveryFee": { "type": "number" },
+        "platformCommission": { "type": "number" },
+        "riderPayout": { "type": "number" },
+        "sellerNet": { "type": "number" },
+        "totalAmount": { "type": "number" },
+        "distanceKm": { "type": "number" },
+        "slaMinutes": { "type": "integer" },
+        "paymentGateway": { "type": "string", "maxLength": 64 },
+        "paymentStatus": { "type": "string", "enum": ["pending", "verified", "failed", "refunded"] },
+        "paymentReference": { "type": "string", "maxLength": 160 },
+        "idempotencyKey": { "type": "string", "minLength": 8, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "settlementApplied": { "type": "boolean" },
+        "orderStatus": { "type": "string", "enum": ["placed", "confirmed", "ready_for_pickup", "picked_up", "in_transit", "delivered", "cancelled"] },
+        "deliveryOtp": { "type": "string", "minLength": 4, "maxLength": 6 },
+        "deliveryAddress": { "type": "string", "minLength": 4, "maxLength": 300 },
+        "itemCount": { "type": "integer" },
+        "itemSummary": { "type": "string", "maxLength": 300 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "customerUid", "shopId", "sellerUid", "countryCode", "currencyCode", "subtotal", "deliveryFee", "totalAmount", "distanceKm", "slaMinutes", "paymentGateway", "paymentStatus", "idempotencyKey", "settlementApplied", "orderStatus", "deliveryOtp", "deliveryAddress", "itemCount", "createdAt", "updatedAt"]
+    },
+    "Delivery": {
+      "title": "Delivery",
+      "description": "Courier fulfillment record tracking pickup, GPS coordinates, OTP verification, and traffic delay verification.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "orderId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "customerUid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "sellerUid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "riderUid": { "type": "string", "maxLength": 128 },
+        "countryCode": { "type": "string", "enum": ["BD", "IN", "US", "GB", "SA"] },
+        "currencyCode": { "type": "string", "enum": ["BDT", "INR", "USD", "GBP", "SAR"] },
+        "distanceKm": { "type": "number" },
+        "slaWindowLabel": { "type": "string", "maxLength": 48 },
+        "estimatedMinutes": { "type": "integer" },
+        "deliveryFee": { "type": "number" },
+        "riderPayout": { "type": "number" },
+        "status": { "type": "string", "enum": ["awaiting_rider", "assigned", "picked_up", "in_transit", "delayed", "delivered", "cancelled"] },
+        "pickupConfirmed": { "type": "boolean" },
+        "otpVerified": { "type": "boolean" },
+        "delayReason": { "type": "string", "maxLength": 240 },
+        "delayVerificationStatus": { "type": "string", "enum": ["none", "pending_review", "approved_excused", "rejected_penalty"] },
+        "riderLat": { "type": "number" },
+        "riderLng": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "orderId", "customerUid", "sellerUid", "countryCode", "currencyCode", "distanceKm", "slaWindowLabel", "estimatedMinutes", "deliveryFee", "riderPayout", "status", "pickupConfirmed", "otpVerified", "delayVerificationStatus", "createdAt", "updatedAt"]
+    },
+    "Transaction": {
+      "title": "Transaction",
+      "description": "Immutable idempotent financial ledger entry for platform revenue, seller credits, rider payouts, withdrawals, and refunds.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "idempotencyKey": { "type": "string", "minLength": 8, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "orderId": { "type": "string", "maxLength": 128 },
+        "targetUid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "ledgerType": { "type": "string", "enum": ["seller_wallet", "rider_wallet", "platform_revenue", "gateway_charge", "refund", "withdrawal"] },
+        "direction": { "type": "string", "enum": ["credit", "debit"] },
+        "countryCode": { "type": "string", "enum": ["BD", "IN", "US", "GB", "SA"] },
+        "currencyCode": { "type": "string", "enum": ["BDT", "INR", "USD", "GBP", "SAR"] },
+        "amount": { "type": "number" },
+        "amountUsd": { "type": "number" },
+        "gateway": { "type": "string", "maxLength": 64 },
+        "gatewaySignature": { "type": "string", "maxLength": 200 },
+        "status": { "type": "string", "enum": ["pending", "verified", "settled", "failed"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "idempotencyKey", "targetUid", "ledgerType", "direction", "countryCode", "currencyCode", "amount", "amountUsd", "gateway", "status", "createdAt"]
+    },
+    "SellerWallet": {
+      "title": "SellerWallet",
+      "description": "Server/Admin-controlled wallet ledger for seller settlements.",
+      "type": "object",
+      "properties": {
+        "sellerUid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "countryCode": { "type": "string", "enum": ["BD", "IN", "US", "GB", "SA"] },
+        "currencyCode": { "type": "string", "enum": ["BDT", "INR", "USD", "GBP", "SAR"] },
+        "availableBalance": { "type": "number" },
+        "pendingBalance": { "type": "number" },
+        "totalEarned": { "type": "number" },
+        "totalWithdrawn": { "type": "number" },
+        "lastOrderId": { "type": "string", "maxLength": 128 },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["sellerUid", "countryCode", "currencyCode", "availableBalance", "pendingBalance", "totalEarned", "totalWithdrawn", "updatedAt"]
+    },
+    "RiderWallet": {
+      "title": "RiderWallet",
+      "description": "Server/Admin-controlled wallet ledger for delivery partner payouts.",
+      "type": "object",
+      "properties": {
+        "riderUid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "countryCode": { "type": "string", "enum": ["BD", "IN", "US", "GB", "SA"] },
+        "currencyCode": { "type": "string", "enum": ["BDT", "INR", "USD", "GBP", "SAR"] },
+        "availableBalance": { "type": "number" },
+        "pendingBalance": { "type": "number" },
+        "totalEarned": { "type": "number" },
+        "totalWithdrawn": { "type": "number" },
+        "lastOrderId": { "type": "string", "maxLength": 128 },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["riderUid", "countryCode", "currencyCode", "availableBalance", "pendingBalance", "totalEarned", "totalWithdrawn", "updatedAt"]
+    },
+    "Withdrawal": {
+      "title": "Withdrawal",
+      "description": "Payout withdrawal request submitted by seller or rider for admin & gateway verification.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "requesterUid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "requesterRole": { "type": "string", "enum": ["seller", "delivery_partner"] },
+        "countryCode": { "type": "string", "enum": ["BD", "IN", "US", "GB", "SA"] },
+        "currencyCode": { "type": "string", "enum": ["BDT", "INR", "USD", "GBP", "SAR"] },
+        "amount": { "type": "number" },
+        "payoutMethod": { "type": "string", "minLength": 2, "maxLength": 80 },
+        "accountMask": { "type": "string", "minLength": 2, "maxLength": 80 },
+        "status": { "type": "string", "enum": ["pending", "approved", "settled", "rejected"] },
+        "reviewedByUid": { "type": "string", "maxLength": 128 },
+        "gatewayPayoutRef": { "type": "string", "maxLength": 160 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "requesterUid", "requesterRole", "countryCode", "currencyCode", "amount", "payoutMethod", "accountMask", "status", "createdAt", "updatedAt"]
+    },
+    "Refund": {
+      "title": "Refund",
+      "description": "Customer refund request linked to a verified order.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "orderId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "customerUid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "countryCode": { "type": "string", "enum": ["BD", "IN", "US", "GB", "SA"] },
+        "currencyCode": { "type": "string", "enum": ["BDT", "INR", "USD", "GBP", "SAR"] },
+        "amount": { "type": "number" },
+        "reason": { "type": "string", "minLength": 4, "maxLength": 400 },
+        "status": { "type": "string", "enum": ["pending", "approved", "processed", "rejected"] },
+        "reviewedByUid": { "type": "string", "maxLength": 128 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "orderId", "customerUid", "countryCode", "currencyCode", "amount", "reason", "status", "createdAt", "updatedAt"]
+    },
+    "Complaint": {
+      "title": "Complaint",
+      "description": "Dispute or service complaint filed by a customer, seller, or rider.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "reporterUid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "reporterRole": { "type": "string", "enum": ["customer", "seller", "delivery_partner"] },
+        "orderId": { "type": "string", "maxLength": 128 },
+        "subject": { "type": "string", "minLength": 3, "maxLength": 160 },
+        "description": { "type": "string", "minLength": 5, "maxLength": 1000 },
+        "status": { "type": "string", "enum": ["open", "investigating", "resolved", "dismissed"] },
+        "resolutionNote": { "type": "string", "maxLength": 500 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "reporterUid", "reporterRole", "subject", "description", "status", "createdAt", "updatedAt"]
+    },
+    "Notification": {
+      "title": "Notification",
+      "description": "FCM-backed user or broadcast notification.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "targetUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "title": { "type": "string", "minLength": 2, "maxLength": 140 },
+        "body": { "type": "string", "minLength": 2, "maxLength": 500 },
+        "channel": { "type": "string", "enum": ["order", "delivery", "wallet", "system", "promotion"] },
+        "isRead": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "targetUid", "title", "body", "channel", "isRead", "createdAt"]
+    },
+    "Country": {
+      "title": "Country",
+      "description": "Country marketplace configuration with payment gateways, SLA rules, and settlement currency.",
+      "type": "object",
+      "properties": {
+        "code": { "type": "string", "enum": ["BD", "IN", "US", "GB", "SA"] },
+        "name": { "type": "string", "minLength": 2, "maxLength": 80 },
+        "currencyCode": { "type": "string", "enum": ["BDT", "INR", "USD", "GBP", "SAR"] },
+        "paymentGateways": { "type": "string", "maxLength": 200 },
+        "baseDeliveryFee": { "type": "number" },
+        "perKmFee": { "type": "number" },
+        "defaultCommissionPct": { "type": "number" },
+        "isEnabled": { "type": "boolean" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["code", "name", "currencyCode", "paymentGateways", "baseDeliveryFee", "perKmFee", "defaultCommissionPct", "isEnabled", "updatedAt"]
+    },
+    "Currency": {
+      "title": "Currency",
+      "description": "Currency symbol, precision, and USD exchange rate for consolidated reporting.",
+      "type": "object",
+      "properties": {
+        "code": { "type": "string", "enum": ["BDT", "INR", "USD", "GBP", "SAR"] },
+        "name": { "type": "string", "minLength": 2, "maxLength": 80 },
+        "symbol": { "type": "string", "minLength": 1, "maxLength": 8 },
+        "usdRate": { "type": "number" },
+        "decimalPlaces": { "type": "integer" },
+        "isActive": { "type": "boolean" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["code", "name", "symbol", "usdRate", "decimalPlaces", "isActive", "updatedAt"]
+    },
+    "AppSetting": {
+      "title": "AppSetting",
+      "description": "Global operational parameters such as SLA thresholds, OTP requirement, and minimum withdrawal.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "shortDistanceKmMax": { "type": "number" },
+        "shortDistanceSlaMinutes": { "type": "integer" },
+        "longDistanceSlaMinMinutes": { "type": "integer" },
+        "longDistanceSlaMaxMinutes": { "type": "integer" },
+        "defaultPlatformCommissionPct": { "type": "number" },
+        "minWithdrawalUsd": { "type": "number" },
+        "requireDeliveryOtp": { "type": "boolean" },
+        "requireAppCheck": { "type": "boolean" },
+        "maintenanceMode": { "type": "boolean" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "shortDistanceKmMax", "shortDistanceSlaMinutes", "longDistanceSlaMinMinutes", "longDistanceSlaMaxMinutes", "defaultPlatformCommissionPct", "minWithdrawalUsd", "requireDeliveryOtp", "requireAppCheck", "maintenanceMode", "updatedAt"]
+    },
+    "AdminUser": {
+      "title": "AdminUser",
+      "description": "Server-authorized RBAC admin record. Regular users cannot self-promote.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "email": { "type": "string", "minLength": 3, "maxLength": 180 },
+        "displayName": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "role": { "type": "string", "enum": ["super_admin", "ops_admin", "finance_admin", "support_admin"] },
+        "permissions": { "type": "string", "maxLength": 400 },
+        "isActive": { "type": "boolean" },
+        "grantedByUid": { "type": "string", "maxLength": 128 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "displayName", "role", "permissions", "isActive", "createdAt", "updatedAt"]
+    },
+    "AuditLog": {
+      "title": "AuditLog",
+      "description": "Immutable append-only audit trail of all admin operations.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "actorUid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "actorEmail": { "type": "string", "minLength": 3, "maxLength": 180 },
+        "actorRole": { "type": "string", "maxLength": 64 },
+        "action": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "targetCollection": { "type": "string", "minLength": 2, "maxLength": 64 },
+        "targetDocId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "summary": { "type": "string", "minLength": 2, "maxLength": 500 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "actorUid", "actorEmail", "actorRole", "action", "targetCollection", "targetDocId", "summary", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": { "schema": { "$ref": "#/entities/User" }, "description": "Core user accounts and role bindings." },
+    "/customers/{customerId}": { "schema": { "$ref": "#/entities/Customer" }, "description": "Customer profiles and delivery defaults." },
+    "/sellers/{sellerId}": { "schema": { "$ref": "#/entities/Seller" }, "description": "Seller verification and commission records." },
+    "/deliveryPartners/{partnerId}": { "schema": { "$ref": "#/entities/DeliveryPartner" }, "description": "Rider verification, availability, and live coordinates." },
+    "/shops/{shopId}": { "schema": { "$ref": "#/entities/Shop" }, "description": "Country-scoped verified merchant storefronts." },
+    "/products/{productId}": { "schema": { "$ref": "#/entities/Product" }, "description": "Local-currency product catalog." },
+    "/categories/{categoryId}": { "schema": { "$ref": "#/entities/Category" }, "description": "Product categories and commission defaults." },
+    "/orders/{orderId}": { "schema": { "$ref": "#/entities/Order" }, "description": "Multi-currency orders with payment idempotency and OTP." },
+    "/deliveries/{deliveryId}": { "schema": { "$ref": "#/entities/Delivery" }, "description": "Delivery fulfillment, SLA, GPS, and OTP logs." },
+    "/transactions/{transactionId}": { "schema": { "$ref": "#/entities/Transaction" }, "description": "Idempotent financial ledger entries." },
+    "/sellerWallets/{sellerId}": { "schema": { "$ref": "#/entities/SellerWallet" }, "description": "Protected seller wallet balances." },
+    "/riderWallets/{riderId}": { "schema": { "$ref": "#/entities/RiderWallet" }, "description": "Protected rider wallet balances." },
+    "/withdrawals/{withdrawalId}": { "schema": { "$ref": "#/entities/Withdrawal" }, "description": "Withdrawal requests for admin verification." },
+    "/refunds/{refundId}": { "schema": { "$ref": "#/entities/Refund" }, "description": "Customer refund requests." },
+    "/complaints/{complaintId}": { "schema": { "$ref": "#/entities/Complaint" }, "description": "Customer, seller, and rider complaints." },
+    "/notifications/{notificationId}": { "schema": { "$ref": "#/entities/Notification" }, "description": "Targeted and broadcast notifications." },
+    "/countries/{countryCode}": { "schema": { "$ref": "#/entities/Country" }, "description": "International country configurations (BD, IN, US, GB, SA)." },
+    "/currencies/{currencyCode}": { "schema": { "$ref": "#/entities/Currency" }, "description": "Multi-currency exchange rates and formatting rules." },
+    "/appSettings/{settingId}": { "schema": { "$ref": "#/entities/AppSetting" }, "description": "Global YouthGo operational settings." },
+    "/adminUsers/{adminId}": { "schema": { "$ref": "#/entities/AdminUser" }, "description": "RBAC admin registry." },
+    "/auditLogs/{logId}": { "schema": { "$ref": "#/entities/AuditLog" }, "description": "Append-only admin action audit trail." }
+  }
+}

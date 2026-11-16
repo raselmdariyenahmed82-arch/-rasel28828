@@ -1,0 +1,103 @@
+/**
+ * YouthGo Firestore Security Rules Adversarial Test Suite (Dirty Dozen)
+ * Run with Firebase Emulator Suite & @firebase/rules-unit-testing
+ */
+
+export const DIRTY_DOZEN_PAYLOADS = [
+  {
+    id: 1,
+    name: 'Privilege Escalation on Signup',
+    path: 'users/attacker_uid',
+    operation: 'create',
+    payload: { uid: 'attacker_uid', role: 'admin', isActive: true },
+    expected: 'PERMISSION_DENIED',
+  },
+  {
+    id: 2,
+    name: 'Self-Admin Creation',
+    path: 'adminUsers/attacker_uid',
+    operation: 'create',
+    payload: { uid: 'attacker_uid', role: 'super_admin', isActive: true },
+    expected: 'PERMISSION_DENIED',
+  },
+  {
+    id: 3,
+    name: 'Direct Seller Wallet Tampering',
+    path: 'sellerWallets/seller_1',
+    operation: 'update',
+    payload: { availableBalance: 999999 },
+    expected: 'PERMISSION_DENIED',
+  },
+  {
+    id: 4,
+    name: 'Direct Rider Wallet Tampering',
+    path: 'riderWallets/rider_1',
+    operation: 'create',
+    payload: { riderUid: 'rider_1', availableBalance: 50000, totalEarned: 50000 },
+    expected: 'PERMISSION_DENIED',
+  },
+  {
+    id: 5,
+    name: 'Idempotency Bypass / Fake Ledger Entry',
+    path: 'transactions/tx_fake_1',
+    operation: 'create',
+    payload: { id: 'tx_fake_1', ledgerType: 'platform_revenue', amount: 10000 },
+    expected: 'PERMISSION_DENIED',
+  },
+  {
+    id: 6,
+    name: 'PII Scraping across Customers',
+    path: 'customers/victim_uid',
+    operation: 'get',
+    payload: null,
+    expected: 'PERMISSION_DENIED',
+  },
+  {
+    id: 7,
+    name: 'Unverified Email Spoof as Admin',
+    path: 'shops/shop_1',
+    operation: 'update',
+    payload: { approvalStatus: 'approved' },
+    expected: 'PERMISSION_DENIED',
+  },
+  {
+    id: 8,
+    name: 'Shadow Field Injection on Order',
+    path: 'orders/order_1',
+    operation: 'update',
+    payload: { settlementApplied: true },
+    expected: 'PERMISSION_DENIED',
+  },
+  {
+    id: 9,
+    name: 'Path ID Poisoning',
+    path: 'orders/invalid$id with spaces',
+    operation: 'create',
+    payload: { id: 'invalid$id' },
+    expected: 'PERMISSION_DENIED',
+  },
+  {
+    id: 10,
+    name: 'Cross-Seller Product Tampering',
+    path: 'products/other_seller_prod',
+    operation: 'update',
+    payload: { price: 1 },
+    expected: 'PERMISSION_DENIED',
+  },
+  {
+    id: 11,
+    name: 'Terminal Order Reversal',
+    path: 'orders/delivered_order_1',
+    operation: 'update',
+    payload: { orderStatus: 'placed' },
+    expected: 'PERMISSION_DENIED',
+  },
+  {
+    id: 12,
+    name: 'Audit Log Erasure',
+    path: 'auditLogs/log_1',
+    operation: 'delete',
+    payload: null,
+    expected: 'PERMISSION_DENIED',
+  },
+];

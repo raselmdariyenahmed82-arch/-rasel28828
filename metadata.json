@@ -1,0 +1,6 @@
+{
+  "name": "YouthGo",
+  "description": "International multi-currency delivery, e-commerce marketplace, and RBAC operations control platform powered by Firebase.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
